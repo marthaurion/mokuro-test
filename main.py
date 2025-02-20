@@ -3,6 +3,8 @@ import zipfile
 from pathlib import Path
 from mokuro.run import run
 
+BASE_DIR = Path("E:/Downloads")
+
 def zip_manga_folders(input_directory: Path):
     # Loop through each folder in the input directory
     for folder in input_directory.iterdir():
@@ -37,10 +39,16 @@ def run_mokuro_directly(input_folder):
     run(parent_dir=input_folder)
 
 # Example usage
-run_mokuro_directly("Manga/")
+input_dir = BASE_DIR / "Manga Inputs/"
+if not input_dir.exists():
+    input_dir.mkdir(parents=True)
 
-input_dir = Path("Manga/")  # Replace with your manga folder path
+run_mokuro_directly(input_dir)
+
 zip_manga_folders(input_dir)
 
-output_dir = Path("output/")
+output_dir = BASE_DIR / "Manga Outputs"
+if not output_dir.exists():
+    output_dir.mkdir(parents=True)
+
 move_zips(input_dir, output_dir)
