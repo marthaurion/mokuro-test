@@ -3,7 +3,7 @@ import zipfile
 from pathlib import Path
 from mokuro.run import run
 
-BASE_DIR = Path("E:/Downloads")
+BASE_DIR = Path("C:/Users/marth/Documents/Manga")
 
 def zip_manga_folders(input_directory: Path):
     # Loop through each folder in the input directory
@@ -35,20 +35,28 @@ def move_zips(source_directory: Path, destination_directory: Path):
             shutil.move(file, destination_directory / file.name)
             print(f"📦 Moved {file.name} to {destination_directory}")
 
-def run_mokuro_directly(input_folder):
-    run(parent_dir=input_folder)
+def run_mokuro_directly(paths, parent_dir=None, disable_confirmation=False):
+    run(*paths, parent_dir=parent_dir, disable_confirmation=disable_confirmation, legacy_html=False, no_cache=True)
 
-# Example usage
-input_dir = BASE_DIR / "Manga Inputs/"
-if not input_dir.exists():
-    input_dir.mkdir(parents=True)
+def main():
+    input_dir = BASE_DIR / "Manga"
+    if not input_dir.exists():
+        print("No inputs found")
+        return
+    
+    manga_list = []
+    for directory in input_dir.iterdir():
+        if directory.is_dir():
+            manga_list.append(directory)
+    
+    run_mokuro_directly(manga_list, disable_confirmation=True)
 
-run_mokuro_directly(input_dir)
+    zip_manga_folders(input_dir)
 
-zip_manga_folders(input_dir)
+    output_dir = BASE_DIR / "outputs"
+    if not output_dir.exists():
+        output_dir.mkdir(parents=True)
 
-output_dir = BASE_DIR / "Manga Outputs"
-if not output_dir.exists():
-    output_dir.mkdir(parents=True)
+    move_zips(input_dir, output_dir)
 
-move_zips(input_dir, output_dir)
+main()
